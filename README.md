@@ -1,4 +1,4 @@
-ogame-scripts
+misc
 =============
 
-Some scripts and gadgets for ogame :)
+For dumping those small scripts I wrote :)
