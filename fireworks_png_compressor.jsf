@@ -1,0 +1,112 @@
+var folder = fw.browseForFolderURL();
+
+if (folder)
+{
+	traverseFolderForFiles(folder);
+}
+
+// =========================================================
+function traverseFolderForFiles(folderURL)
+{
+	if (Files.isDirectory(folderURL))
+	{
+		var folderItems = Files.enumFiles(folderURL);
+		
+		for (var i = 0; i < folderItems.length; i++)
+		{
+			traverseFolderForFiles(folderItems[i]);
+		}
+	}
+	else
+	{
+		compressFile(folderURL);
+	}
+}
+
+function compressFile(fileURL)
+{
+	var relPath = getRelativePath(fileURL);
+	var newPath = folder + "_Compressed" + relPath;
+	var newFolder = Files.getDirectory(newPath);
+	if (!Files.exists(newFolder))
+	{
+		createFolder(newFolder);
+	}
+	
+	if (Files.getExtension(fileURL) == ".png")
+	{
+		var doc = fw.openDocument(fileURL);
+		doc.exportTo(newPath, getExportOptions());
+		doc.close(false);
+	}
+	else
+	{
+		Files.copy(fileURL, newPath);
+	}
+}
+
+function getRelativePath(fileURL)
+{
+	return fileURL.replace(folder.toString(), "");
+}
+
+function createFolder(folderURL)
+{
+	var parentURL = folderURL.substring(0, folderURL.lastIndexOf("/"));
+	if (!Files.exists(parentURL))
+	{
+		createFolder(parentURL);
+	}
+	Files.createDirectory(folderURL);
+}
+
+function getExportOptions()
+{
+	return {
+		name:null,
+		xSize:100,
+		ySize:100,
+		cropTop:0,
+		crop:false,
+		sorting:"none",
+		numCustomEntries:1,
+		numEntriesRequested:64,
+		paletteTransparency:"rgba",
+		webSnapTolerance:14,
+		jpegSelPreserveText:true,
+		animAutoDifference:true,
+		exportFormat:"PNG",
+		paletteEntries:{
+			0:"#ffffff00"
+		},
+		numGridEntries:6,
+		ditherPercent:100,
+		jpegSmoothness:0,
+		jpegSubsampling:0,
+		jpegSelQuality:90,
+		percentScale:100,
+		progressiveJPEG:false,
+		interlacedGIF:false,
+		animAutoCrop:true,
+		localAdaptive:true,
+		webSnapAdaptive:false,
+		lossyGifAmount:0,
+		jpegSelQualityEnabled:false,
+		jpegSelPreserveButtons:false,
+		savedAnimationRepeat:0,
+		macCreator:"",
+		macFileType:"",
+		colorMode:"indexed",
+		paletteMode:"adaptive",
+		paletteInfo:null,
+		ditherMode:"none",
+		jpegQuality:80,
+		cropLeft:0,
+		cropBottom:0,
+		cropRight:0,
+		applyScale:false,
+		useScale:true,
+		optimized:true,
+		frameInfo:[],
+	}
+}
